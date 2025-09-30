@@ -23,6 +23,12 @@ with open('road_accident_severity_pred.pkl', 'rb') as f:
 # ================= LOAD PREPROCESSED DATA =================
 df = pd.read_csv("road_preprocessed.csv")
 
+df = pd.read_csv("road_preprocessed.csv")
+
+st.sidebar.write("Columns in loaded CSV:")
+st.sidebar.write(df.columns.tolist())
+
+
 # ====== Define feature list used during training ======
 MODEL_FEATURES = ['your_feature_1', 'your_feature_2', 'your_feature_3', 'your_feature_4']  # Replace with actual feature names
 
