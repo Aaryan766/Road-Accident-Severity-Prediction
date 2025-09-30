@@ -11,6 +11,10 @@ data = '''This project predicts accident severity—slight, serious, or fatal—
 st.subheader(data)
 st.image('https://www.pioneeredge.in/wp-content/uploads/2022/11/accident.jpg')
 
+st.sidebar.write("Sidebar test label")
+option = st.sidebar.selectbox("Test select", ["A", "B"])
+st.sidebar.write(f"You selected: {option}")
+
 # ================= LOAD MODEL =================
 with open('road_accident_severity_pred.pkl', 'rb') as f:
     severity_model = pickle.load(f)
