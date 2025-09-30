@@ -11,7 +11,7 @@ data = '''This project predicts accident severity—slight, serious, or fatal—
 st.subheader(data)
 st.image('https://www.pioneeredge.in/wp-content/uploads/2022/11/accident.jpg')
 
-# Simple test widgets in sidebar to confirm sidebar works
+# Sidebar test widgets to confirm sidebar renders
 st.sidebar.write("Sidebar test label")
 option = st.sidebar.selectbox("Test select", ["A", "B"])
 st.sidebar.write(f"You selected: {option}")
@@ -24,7 +24,7 @@ with open('road_accident_severity_pred.pkl', 'rb') as f:
 df = pd.read_csv("road_preprocessed.csv")
 
 # ====== Define feature list used during training ======
-MODEL_FEATURES = ['your_feature_1', 'your_feature_2', 'your_feature_3', 'your_feature_4']  # Replace with actual features
+MODEL_FEATURES = ['your_feature_1', 'your_feature_2', 'your_feature_3', 'your_feature_4']  # Replace with actual feature names
 
 top_features = [
     'Type_of_collision',
@@ -36,27 +36,27 @@ top_features = [
     'Road_surface_conditions'
 ]
 
-# Sidebar image and debug info
+# Sidebar header and image
 st.sidebar.header("Input Key Accident Features")
 st.sidebar.image('https://static.vecteezy.com/system/resources/previews/000/554/213/original/exclamation-mark-vector-icon.jpg', use_container_width=True)
 
 full_input = pd.DataFrame(columns=df.columns, index=[0])
 
-# Pre-fill median for numeric columns & mode for categorical columns
+# Pre-fill median for numeric columns and mode for categorical columns
 numeric_cols = df.select_dtypes(include=[np.number]).columns
 full_input[numeric_cols] = df[numeric_cols].median()
 cat_cols = df.select_dtypes(exclude=[np.number]).columns
 for col in cat_cols:
     full_input[col] = df[col].mode()[0]
 
-# Dynamic sidebar widgets with debug info
+# Loop over top features and generate sidebar widgets with debugging info
 for feature in top_features:
     st.sidebar.write(f"Loading feature: {feature}")
-    onehot_cols = [col for col in df.columns if col.startswith(feature + '_')]
+    onehot_cols = [col for col in df.columns if col.startswith(f"{feature}_")]
     st.sidebar.write(f"One-hot columns for {feature}: {onehot_cols}")
 
     if onehot_cols:
-        options = [col.replace(feature + '_', '') for col in onehot_cols]
+        options = [col.replace(f"{feature}_", "") for col in onehot_cols]
         st.sidebar.write(f"Options for {feature}: {options}")
         selected = st.sidebar.selectbox(f"Select {feature}", options)
         for col in onehot_cols:
@@ -83,17 +83,17 @@ for col in ['Type_of_collision', 'Type_of_vehicle', 'Light_conditions', 'Weather
     if col in full_input.columns:
         full_input.drop(columns=[col], inplace=True)
 
-# Convert all features to numeric for model input and align columns
+# Convert all data to numeric and align columns for the prediction model
 full_input = full_input.apply(lambda c: pd.to_numeric(c, errors='coerce')).fillna(0)
 full_input = full_input.reindex(columns=MODEL_FEATURES, fill_value=0)
 
-# Progress bar for UX
+# Progress bar to enhance UX
 progress_bar = st.progress(0)
 for i in range(100):
     time.sleep(0.02)
     progress_bar.progress(i + 1)
 
-# Model prediction
+# Use model to predict accident severity
 pred = severity_model.predict(full_input)[0]
 st.write(f"Raw model output: {pred}")
 st.success(f"Predicted Accident Severity: {pred}")
